@@ -1,8 +1,12 @@
 const server = require('./server')
 const axios = require('axios')
 
+const http = axios.create({
+  baseURL: 'http://localhost:5000'
+})
+
 function createTodo (text) {
-  return axios.post(`http://localhost:5000/todos?text=${text}`)
+  return http.post(`/todos?text=${text}`)
 }
 
 describe('server', () => {
@@ -21,7 +25,7 @@ describe('server', () => {
 
   describe('GET /todos', () => {
     it('should return all todods', async () => {
-      const res = await axios.get('http://localhost:5000/todos')
+      const res = await http.get('/todos')
       expect(res.data).toEqual([])
     })
   })
@@ -30,7 +34,7 @@ describe('server', () => {
     it('should create a todo', async () => {
       const createRes = await createTodo('ciaone')
       const id = createRes.data.id
-      const getRes = await axios.get('http://localhost:5000/todos')
+      const getRes = await http.get('/todos')
       const todo = getRes.data.find(t => t.id === id)
       expect(todo.text).toEqual('ciaone')
     })
@@ -45,7 +49,7 @@ describe('server', () => {
     it('should return todo with right id', async () => {
       const createRes = await createTodo('ciaone')
       const id = createRes.data.id
-      const getRes = await axios.get(`http://localhost:5000/todos/${id}`)
+      const getRes = await http.get(`/todos/${id}`)
 
       expect(getRes.data.id).toEqual(id)
     })
@@ -54,7 +58,7 @@ describe('server', () => {
       // usa res.status
 
       const id = 12345
-      axios.get(`http://localhost:5000/todos/${id}`).catch(err => {
+      http.get(`/todos/${id}`).catch(err => {
         expect(err.response.status).toEqual(404)
         done()
       })
@@ -66,9 +70,7 @@ describe('server', () => {
       const createRes = await createTodo('ciaone')
       const id = createRes.data.id
       const newText = 'enoaic'
-      const patchRes = await axios.patch(
-        `http://localhost:5000/todos/${id}?text=${newText}`
-      )
+      const patchRes = await http.patch(`/todos/${id}?text=${newText}`)
       expect(patchRes.data.text).toEqual(newText)
     })
 
@@ -76,8 +78,8 @@ describe('server', () => {
       const createRes = await createTodo('ciaone')
       const id = createRes.data.id
       const newText = 'enoaic'
-      await axios.patch(`http://localhost:5000/todos/${id}?text=${newText}`)
-      const getRes = await axios.get(`http://localhost:5000/todos/${id}`)
+      await http.patch(`/todos/${id}?text=${newText}`)
+      const getRes = await http.get(`/todos/${id}`)
       expect(getRes.data.text).toEqual(newText)
     })
   })
@@ -86,9 +88,9 @@ describe('server', () => {
     it('should delete todo identified by id', async done => {
       const createRes = await createTodo('ciaone')
       const id = createRes.data.id
-      await axios.delete(`http://localhost:5000/todos/${id}`)
+      await http.delete(`/todos/${id}`)
 
-      axios.get(`http://localhost:5000/todos/${id}`).catch(err => {
+      http.get(`/todos/${id}`).catch(err => {
         expect(err.response.status).toEqual(404)
 
         done()
@@ -97,7 +99,7 @@ describe('server', () => {
     it('should returnd deleted todo', async () => {
       const createRes = await createTodo('ciaone')
       const id = createRes.data.id
-      const deletedRes = await axios.delete(`http://localhost:5000/todos/${id}`)
+      const deletedRes = await http.delete(`/todos/${id}`)
       expect(deletedRes.data.id).toEqual(id)
     })
   })
@@ -106,7 +108,7 @@ describe('server', () => {
   // describe('GET /todos', () => {
   //   it('should return all todods', done => {
   //
-  //     axios.get('http://localhost:5000/todos').then(res => {
+  //     http.get('/todos').then(res => {
   //       expect(res.data).toEqual([])
   //
   //       done()
