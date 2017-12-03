@@ -6,7 +6,9 @@ const http = axios.create({
 })
 
 function createTodo (text) {
-  return http.post(`/todos?text=${text}`)
+  return http.post(`/todos`, {
+    text
+  })
 }
 
 describe('server', () => {
@@ -15,7 +17,6 @@ describe('server', () => {
     s = server.start(5000)
   })
   afterEach(() => {
-    console.log('after')
     s.close()
   })
 
@@ -70,7 +71,7 @@ describe('server', () => {
       const createRes = await createTodo('ciaone')
       const id = createRes.data.id
       const newText = 'enoaic'
-      const patchRes = await http.patch(`/todos/${id}?text=${newText}`)
+      const patchRes = await http.patch(`/todos/${id}`, { text: newText })
       expect(patchRes.data.text).toEqual(newText)
     })
 
@@ -78,7 +79,7 @@ describe('server', () => {
       const createRes = await createTodo('ciaone')
       const id = createRes.data.id
       const newText = 'enoaic'
-      await http.patch(`/todos/${id}?text=${newText}`)
+      await await http.patch(`/todos/${id}`, { text: newText })
       const getRes = await http.get(`/todos/${id}`)
       expect(getRes.data.text).toEqual(newText)
     })

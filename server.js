@@ -1,12 +1,18 @@
 const express = require('express')
+const bodyParser = require('body-parser')
 const uuid = require('uuid')
 
 const PORT = 5000
+
+const isTest = process.env.NODE_ENV === 'test'
 
 let todos = []
 
 exports.start = function (port) {
   const app = express()
+
+  app.use(bodyParser.json())
+
   const notFoundError = (response, id) => {
     response.status(404).send({
       message: `todo with ${id} not found`
@@ -29,8 +35,8 @@ exports.start = function (port) {
 
   app.patch('/todos/:id', (request, response) => {
     const id = request.params.id
-    const newChecked = request.query.checked
-    const newText = request.query.text
+    const newChecked = request.body.checked
+    const newText = request.body.text
 
     const todo = getTodoById(id)
 
@@ -59,7 +65,7 @@ exports.start = function (port) {
   })
 
   app.post('/todos', (request, response) => {
-    const text = request.query.text
+    const text = request.body.text
 
     if (!text) {
       response.status(400).send({
@@ -80,8 +86,10 @@ exports.start = function (port) {
     response.send(newTodo)
   })
 
-  const server = app.listen(port, () =>
-    console.log(`listening on port ${PORT}`)
-  )
+  const server = app.listen(port, () => {
+    if (!isTest) {
+      console.log(`listening on port ${PORT}`)
+    }
+  })
   return server
 }
