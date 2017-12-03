@@ -1,0 +1,32 @@
+{
+  "name": "node-todolist-example",
+  "version": "0.0.1",
+  "main": "index.js",
+  "author":
+    "jaga santagostino <jagasantagostino@gmail.com> (https://jagasantagostino.com)",
+  "license": "MIT",
+  "scripts": {
+    "test": "yarn"
+  },
+  "dependencies": {
+    "@types/node": "^8.0.53",
+    "axios": "^0.17.1",
+    "express": "^4.16.2",
+    "uuid": "^3.1.0"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/express": "^4.0.39",
+    "@types/jest": "^21.1.8",
+    "eslint": "^4.12.1",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-jest": "^21.3.2",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "jest": "^21.2.1",
+    "nodemon": "^1.12.1"
+  },
+  "jest": { "testEnvironment": "node" }
+}
