@@ -31,21 +31,6 @@ describe('server', () => {
     })
   })
 
-  describe('POST /todos', () => {
-    it('should create a todo', async () => {
-      const createRes = await createTodo('ciaone')
-      const id = createRes.data.id
-      const getRes = await http.get('/todos')
-      const todo = getRes.data.find(t => t.id === id)
-      expect(todo.text).toEqual('ciaone')
-    })
-
-    it('should return created todo', async () => {
-      const res = await createTodo('ciaone')
-      expect(res.data.text).toEqual('ciaone')
-    })
-  })
-
   describe('GET /todos:id', () => {
     it('should return todo with right id', async () => {
       const createRes = await createTodo('ciaone')
@@ -63,6 +48,21 @@ describe('server', () => {
         expect(err.response.status).toEqual(404)
         done()
       })
+    })
+  })
+
+  describe('POST /todos', () => {
+    it('should create a todo', async () => {
+      const createRes = await createTodo('ciaone')
+      const id = createRes.data.id
+      const getRes = await http.get('/todos')
+      const todo = getRes.data.find(t => t.id === id)
+      expect(todo.text).toEqual('ciaone')
+    })
+
+    it('should return created todo', async () => {
+      const res = await createTodo('ciaone')
+      expect(res.data.text).toEqual('ciaone')
     })
   })
 
