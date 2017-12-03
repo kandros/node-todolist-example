@@ -5,37 +5,9 @@ const PORT = 5000
 
 const isTest = process.env.NODE_ENV === 'test'
 
-const Sequelize = require('sequelize')
+exports.start = async function (port, { db }) {
+  const { models } = db
 
-const sequelize = new Sequelize('node-todolist', 'postgres', 'postgres', {
-  host: 'localhost',
-  dialect: 'postgres',
-  operatorsAliases: false,
-  logging: !isTest
-})
-
-const Todo = sequelize.define(
-  'todo',
-  {
-    text: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
-    completed: {
-      type: Sequelize.BOOLEAN,
-      defaultValue: false
-    }
-  },
-  {
-    timestamps: false
-  }
-)
-
-const models = {
-  Todo
-}
-
-exports.start = async function (port) {
   const app = express()
 
   app.use(bodyParser.json())
@@ -114,7 +86,6 @@ exports.start = async function (port) {
     response.status(200).send(todo)
   })
 
-  await sequelize.sync({ force: !!isTest })
   const server = app.listen(port, () => {
     if (!isTest) {
       console.log(`listening on port ${PORT}`)

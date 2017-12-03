@@ -1,5 +1,6 @@
 const server = require('./server')
 const axios = require('axios')
+const database = require('./db')
 
 const http = axios.create({
   baseURL: 'http://localhost:5000'
@@ -14,7 +15,16 @@ function createTodo (text) {
 describe('server', () => {
   let s
   beforeEach(async () => {
-    s = await server.start(5000)
+    const isTest = process.env.NODE_ENV === 'test'
+    const db = await database.init(
+      {
+        dbName: 'node-todolist',
+        username: 'postgres',
+        password: 'postgres'
+      },
+      isTest
+    )
+    s = await server.start(5000, { db })
   })
   afterEach(() => {
     s.close()
