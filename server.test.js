@@ -13,8 +13,8 @@ function createTodo (text) {
 
 describe('server', () => {
   let s
-  beforeEach(() => {
-    s = server.start(5000)
+  beforeEach(async () => {
+    s = await server.start(5000)
   })
   afterEach(() => {
     s.close()
@@ -104,16 +104,4 @@ describe('server', () => {
       expect(deletedRes.data.id).toEqual(id)
     })
   })
-
-  // using promises
-  // describe('GET /todos', () => {
-  //   it('should return all todods', done => {
-  //
-  //     http.get('/todos').then(res => {
-  //       expect(res.data).toEqual([])
-  //
-  //       done()
-  //     })
-  //   })
-  // })
 })

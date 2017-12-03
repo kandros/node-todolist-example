@@ -1,14 +1,41 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-const uuid = require('uuid')
 
 const PORT = 5000
 
 const isTest = process.env.NODE_ENV === 'test'
 
-let todos = []
+const Sequelize = require('sequelize')
 
-exports.start = function (port) {
+const sequelize = new Sequelize('node-todolist', 'postgres', 'postgres', {
+  host: 'localhost',
+  dialect: 'postgres',
+  operatorsAliases: false,
+  logging: !isTest
+})
+
+const Todo = sequelize.define(
+  'todo',
+  {
+    text: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
+    completed: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false
+    }
+  },
+  {
+    timestamps: false
+  }
+)
+
+const models = {
+  Todo
+}
+
+exports.start = async function (port) {
   const app = express()
 
   app.use(bodyParser.json())
@@ -18,13 +45,16 @@ exports.start = function (port) {
       message: `todo with ${id} not found`
     })
   }
-  const getTodoById = id => todos.find(todo => todo.id === id)
+  const getTodoById = id => models.Todo.findById(id)
 
-  app.get('/todos', (request, response) => response.send(todos))
+  app.get('/todos', async (request, response) => {
+    const todos = await models.Todo.findAll()
+    response.send(todos)
+  })
 
-  app.get('/todos/:id', (request, response) => {
+  app.get('/todos/:id', async (request, response) => {
     const id = request.params.id
-    const todo = getTodoById(id)
+    const todo = await getTodoById(id)
 
     if (!todo) {
       return notFoundError(response, id)
@@ -33,38 +63,7 @@ exports.start = function (port) {
     response.status(200).send(todo)
   })
 
-  app.patch('/todos/:id', (request, response) => {
-    const id = request.params.id
-    const newChecked = request.body.checked
-    const newText = request.body.text
-
-    const todo = getTodoById(id)
-
-    if (!todo) {
-      return notFoundError(response, id)
-    }
-
-    todo.checked = newChecked || todo.checked
-    todo.text = newText || todo.Text
-
-    response.status(200).send(todo)
-  })
-
-  app.delete('/todos/:id', (request, response) => {
-    const id = request.params.id
-
-    const todo = getTodoById(id)
-
-    if (!todo) {
-      return notFoundError(response, id)
-    }
-
-    todos = todos.filter(todo => todo.id !== id)
-
-    response.status(200).send(todo)
-  })
-
-  app.post('/todos', (request, response) => {
+  app.post('/todos', async (request, response) => {
     const text = request.body.text
 
     if (!text) {
@@ -74,18 +73,48 @@ exports.start = function (port) {
       return
     }
 
-    const newTodo = {
-      id: uuid.v1(),
-      text,
-      completed: false
-    }
-
-    todos.push(newTodo)
+    const todo = await models.Todo.create({
+      text
+    })
 
     response.status(201)
-    response.send(newTodo)
+    response.send(todo)
   })
 
+  app.patch('/todos/:id', async (request, response) => {
+    const id = request.params.id
+    const { text, completed } = request.body
+
+    const todo = await getTodoById(id)
+
+    if (!todo) {
+      return notFoundError(response, id)
+    }
+
+    const toUpdate = { text, completed }
+
+    await todo.update({
+      ...toUpdate
+    })
+
+    response.status(200).send(todo)
+  })
+
+  app.delete('/todos/:id', async (request, response) => {
+    const id = request.params.id
+
+    const todo = await getTodoById(id)
+
+    if (!todo) {
+      return notFoundError(response, id)
+    }
+
+    todo.destroy()
+
+    response.status(200).send(todo)
+  })
+
+  await sequelize.sync({ force: !!isTest })
   const server = app.listen(port, () => {
     if (!isTest) {
       console.log(`listening on port ${PORT}`)

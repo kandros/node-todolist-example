@@ -2,8 +2,7 @@
   "name": "node-todolist-example",
   "version": "0.0.1",
   "main": "index.js",
-  "author":
-    "jaga santagostino <jagasantagostino@gmail.com> (https://jagasantagostino.com)",
+  "author": "jaga santagostino <jagasantagostino@gmail.com> (https://jagasantagostino.com)",
   "license": "MIT",
   "scripts": {
     "test": "yarn"
@@ -13,6 +12,8 @@
     "axios": "^0.17.1",
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
+    "pg": "^7.4.0",
+    "sequelize": "^4.25.1",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
@@ -20,6 +21,8 @@
     "@types/body-parser": "^1.16.8",
     "@types/express": "^4.0.39",
     "@types/jest": "^21.1.8",
+    "@types/pg": "^7.4.0",
+    "@types/sequelize": "^4.0.79",
     "@types/uuid": "^3.4.3",
     "eslint": "^4.12.1",
     "eslint-config-standard": "^10.2.1",
